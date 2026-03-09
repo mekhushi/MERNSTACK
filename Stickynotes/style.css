@@ -1,0 +1,372 @@
+/* =====================================================
+   PINBOARD — STICKY NOTES
+   Warm cork-board analog aesthetic
+   ===================================================== */
+
+/* --- Variables --- */
+:root {
+  --board-bg:     #c8a97a;
+  --board-shadow: rgba(80, 50, 20, 0.35);
+  --header-bg:    rgba(42, 28, 14, 0.92);
+  --header-text:  #f5ead8;
+  --header-sub:   rgba(245, 234, 216, 0.5);
+  --accent:       #e07b39;
+  --accent-dark:  #c4612a;
+  --btn-text:     #fff;
+  --count-bg:     rgba(255,255,255,0.12);
+
+  /* Note colors */
+  --yellow:   #fef08a;
+  --yellow-d: #fde047;
+  --peach:    #fed7aa;
+  --peach-d:  #fdba74;
+  --mint:     #bbf7d0;
+  --mint-d:   #86efac;
+  --sky:      #bae6fd;
+  --sky-d:    #7dd3fc;
+  --lavender: #ddd6fe;
+  --lavender-d: #c4b5fd;
+  --rose:     #fecdd3;
+  --rose-d:   #fda4af;
+}
+
+/* --- Reset --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--board-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* --- Cork texture (CSS only) --- */
+.board-texture {
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(255,220,150,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(180,120,60,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(210,170,100,0.15) 0%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* SVG noise for paper grain */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  opacity: 0.065;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --- Header --- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--header-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pin-emoji {
+  font-size: 1.7rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+.title-block { display: flex; flex-direction: column; gap: 1px; }
+
+.site-title {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  color: var(--header-text);
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.site-sub {
+  font-size: 0.65rem;
+  color: var(--header-sub);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.count-badge {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: rgba(245, 234, 216, 0.6);
+  background: var(--count-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.count-badge #note-count {
+  font-weight: 600;
+  color: var(--header-text);
+  font-size: 0.8rem;
+}
+
+/* --- Add Button --- */
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(224, 123, 57, 0.45), 0 1px 3px rgba(0,0,0,0.2);
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.2s ease;
+}
+.add-btn:hover::after { background: rgba(255,255,255,0.08); }
+.add-btn:active { background: var(--accent-dark); }
+
+/* --- Empty State --- */
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.empty-blob {
+  width: 90px;
+  height: 90px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+.empty-emoji { font-size: 2.4rem; }
+
+.empty-title {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  color: rgba(60, 35, 10, 0.7);
+  margin-bottom: 6px;
+}
+
+.empty-hint {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(60, 35, 10, 0.45);
+}
+
+/* --- Board / Grid --- */
+.board {
+  position: relative;
+  z-index: 10;
+  padding: 36px 32px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+  min-height: calc(100vh - 73px);
+  align-content: start;
+}
+
+/* --- Sticky Note Card --- */
+.note-card {
+  position: relative;
+  border-radius: 4px 4px 4px 4px;
+  padding: 0;
+  box-shadow:
+    3px 3px 0 rgba(0,0,0,0.08),
+    6px 8px 18px rgba(0,0,0,0.18),
+    0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+  cursor: default;
+  will-change: transform;
+  transition: box-shadow 0.25s ease;
+  transform-origin: top center;
+}
+
+.note-card:hover {
+  box-shadow:
+    4px 4px 0 rgba(0,0,0,0.09),
+    10px 14px 30px rgba(0,0,0,0.22),
+    0 1px 3px rgba(0,0,0,0.12);
+  z-index: 20;
+}
+
+/* Tape strip at top */
+.note-card::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
+  width: 48px;
+  height: 20px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  backdrop-filter: blur(2px);
+  z-index: 1;
+}
+
+/* Fold at bottom-right corner */
+.note-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(225deg, rgba(0,0,0,0.12) 50%, transparent 50%);
+  border-radius: 0 0 4px 0;
+}
+
+/* Color variants */
+.note-card.yellow   { background: var(--yellow);   }
+.note-card.peach    { background: var(--peach);     }
+.note-card.mint     { background: var(--mint);      }
+.note-card.sky      { background: var(--sky);       }
+.note-card.lavender { background: var(--lavender);  }
+.note-card.rose     { background: var(--rose);      }
+
+/* --- Note Top Bar --- */
+.note-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 6px;
+  gap: 8px;
+}
+
+.note-color-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.note-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1.5px solid rgba(0,0,0,0.15);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+}
+.note-dot:hover { transform: scale(1.25); border-color: rgba(0,0,0,0.35); }
+.note-dot.dot-yellow   { background: var(--yellow-d); }
+.note-dot.dot-peach    { background: var(--peach-d);  }
+.note-dot.dot-mint     { background: var(--mint-d);   }
+.note-dot.dot-sky      { background: var(--sky-d);    }
+.note-dot.dot-lavender { background: var(--lavender-d); }
+.note-dot.dot-rose     { background: var(--rose-d);   }
+
+.note-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  color: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+.note-delete:hover {
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.1);
+  transform: scale(1.1);
+}
+
+/* --- Textarea --- */
+.note-textarea {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 4px 14px 14px;
+  font-family: 'Caveat', cursive;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: rgba(30, 18, 6, 0.82);
+  line-height: 1.65;
+  caret-color: rgba(30, 18, 6, 0.6);
+  min-height: 140px;
+}
+.note-textarea::placeholder { color: rgba(30, 18, 6, 0.3); font-style: italic; }
+.note-textarea:focus { outline: none; }
+
+/* --- Note Footer --- */
+.note-footer {
+  padding: 6px 14px 10px;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(30, 18, 6, 0.35);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .header { padding: 14px 18px; }
+  .board  { padding: 24px 16px; gap: 20px; }
+  .site-title { font-size: 1.3rem; }
+  .add-btn span:last-child { display: none; }
+  .add-btn { padding: 10px 14px; }
+  .count-badge { display: none; }
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sticky Notes</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- Corkboard texture overlay -->
+  <div class="board-texture"></div>
+  <div class="noise-overlay"></div>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-left">
+      <span class="pin-emoji">📌</span>
+      <div class="title-block">
+        <h1 class="site-title">Pinboard</h1>
+        <p class="site-sub">your thoughts, captured</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="count-badge" id="count-badge">
+        <span id="note-count">0</span> notes
+      </div>
+      <button class="add-btn" id="add-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        New Note
+      </button>
+    </div>
+  </header>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="empty-state">
+    <div class="empty-blob">
+      <span class="empty-emoji">🗒️</span>
+    </div>
+    <p class="empty-title">The board is empty</p>
+    <p class="empty-hint">Pin your first thought</p>
+  </div>
+
+  <!-- Notes grid -->
+  <main class="board" id="board"></main>
+
+  <script src="script.js"></script>
+</body>
+</html>
