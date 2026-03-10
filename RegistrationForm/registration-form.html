@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f7f4ef;
+    --cream: #ede8df;
+    --accent: #c94f2a;
+    --accent-soft: #f5ddd6;
+    --success: #2a7a4f;
+    --success-soft: #d2f0e0;
+    --warn: #b87c00;
+    --warn-soft: #fdf0cc;
+    --muted: #7a756d;
+    --border: #d8d2c8;
+    --strong-weak: #e05c3a;
+    --strong-fair: #e0a030;
+    --strong-good: #6ab04c;
+    --strong-great: #2a7a4f;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px 60px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .header .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .header .sub {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* Form */
+  .form { display: flex; flex-direction: column; gap: 22px; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  label .req { color: var(--accent); font-size: 14px; line-height: 1; }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"] {
+    width: 100%;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 13px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    -webkit-appearance: none;
+  }
+  input:focus {
+    border-color: var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    background: #fff;
+  }
+  input.valid {
+    border-color: var(--success);
+    box-shadow: 3px 3px 0 var(--success-soft);
+  }
+  input.invalid {
+    border-color: var(--accent);
+    box-shadow: 3px 3px 0 var(--accent-soft);
+  }
+
+  /* Password toggle */
+  .toggle-pw {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+  .toggle-pw:hover { color: var(--ink); }
+  .toggle-pw svg { width: 18px; height: 18px; }
+  input[type="password"], input[type="text"].pw-input {
+    padding-right: 48px;
+  }
+
+  /* Validation message */
+  .msg {
+    font-size: 12px;
+    min-height: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+    overflow: hidden;
+  }
+  .msg.error { color: var(--accent); }
+  .msg.ok { color: var(--success); }
+  .msg.hint { color: var(--muted); }
+  .msg svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  /* Password strength */
+  .strength-wrap { margin-top: 4px; }
+  .strength-bars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 5px;
+  }
+  .bar {
+    height: 3px;
+    flex: 1;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+  .bar.active-1 { background: var(--strong-weak); }
+  .bar.active-2 { background: var(--strong-fair); }
+  .bar.active-3 { background: var(--strong-good); }
+  .bar.active-4 { background: var(--strong-great); }
+  .strength-label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .strength-label.s1 { color: var(--strong-weak); }
+  .strength-label.s2 { color: var(--strong-fair); }
+  .strength-label.s3 { color: var(--strong-good); }
+  .strength-label.s4 { color: var(--strong-great); }
+
+  /* Submit */
+  .submit-btn {
+    margin-top: 8px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1.5px solid var(--ink);
+    border-radius: 3px;
+    padding: 15px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.1s, box-shadow 0.15s;
+    width: 100%;
+  }
+  .submit-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 4px 4px 0 var(--accent-soft);
+  }
+  .submit-btn:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--accent-soft); }
+  .submit-btn:disabled {
+    background: var(--border);
+    border-color: var(--border);
+    color: var(--muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 28px;
+    right: 28px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 14px 20px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(-12px);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    z-index: 100;
+    max-width: 300px;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast .t-icon { font-size: 16px; }
+
+  /* Submissions log */
+  .log-section {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1.5px solid var(--ink);
+  }
+  .log-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .log-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .log-count {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .log-empty {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    padding: 20px 0;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 3px;
+  }
+  .entry {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    animation: slideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .entry-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .entry-name { font-weight: 500; font-size: 14px; }
+  .entry-time { font-size: 10px; color: var(--muted); letter-spacing: 0.05em; }
+  .entry-detail { font-size: 12px; color: var(--muted); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <p class="eyebrow">Create account</p>
+    <h1>Register</h1>
+    <p class="sub">Fill in the details below to get started.</p>
+  </div>
+
+  <form class="form" id="regForm" novalidate>
+
+    <!-- Name -->
+    <div class="field">
+      <label for="name">Full Name <span class="req">*</span></label>
+      <div class="input-wrap">
+        <input type="text" id="name" placeholder="Jane Doe" autocomplete="name">
+      </div>
+      <span class="msg hint" id="name-msg"></span>
+    </div>
+
+    <!-- Email -->
+    <div class="field">
+      <label for="email">Email Address <span class="req">*</span></label>
+      <div class="input-wrap">
+        <input type="email" id="email" placeholder="jane@example.com" autocomplete="email">
+      </div>
+      <span class="msg hint" id="email-msg"></span>
+    </div>
+
+    <!-- Phone -->
+    <div class="field">
+      <label for="phone">Phone Number <span class="req">*</span></label>
+      <div class="input-wrap">
+        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" autocomplete="tel">
+      </div>
+      <span class="msg hint" id="phone-msg"></span>
+    </div>
+
+    <!-- Password -->
+    <div class="field">
+      <label for="password">Password <span class="req">*</span></label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password">
+        <button type="button" class="toggle-pw" id="togglePw" aria-label="Show/hide password">
+          <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="strength-wrap" id="strengthWrap" style="display:none">
+        <div class="strength-bars">
+          <div class="bar" id="b1"></div>
+          <div class="bar" id="b2"></div>
+          <div class="bar" id="b3"></div>
+          <div class="bar" id="b4"></div>
+        </div>
+        <span class="strength-label" id="strengthLabel">—</span>
+      </div>
+      <span class="msg hint" id="password-msg"></span>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Create Account</button>
+  </form>
+
+  <!-- Submissions log -->
+  <div class="log-section">
+    <div class="log-header">
+      <span class="log-title">Submissions</span>
+      <span class="log-count" id="logCount">0 entries</span>
+    </div>
+    <div id="logList"><div class="log-empty">No submissions yet.</div></div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="t-icon">✓</span>
+  <span id="toastMsg">Registered successfully!</span>
+</div>
+
+<script>
+  // ── Icons ──────────────────────────────────────────────────────────
+  const eyeOpen = `<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>`;
+  const eyeSlash = `<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/>`;
+  const checkSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>`;
+  const crossSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+
+  // ── Validation helpers ─────────────────────────────────────────────
+  const validators = {
+    name:  v => v.trim().length >= 2 && /^[a-zA-Z\s'\-\.]+$/.test(v.trim()),
+    email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),
+    phone: v => /^[\d\s\+\-\(\)]{7,20}$/.test(v.trim()),
+    password: v => v.length >= 8
+  };
+  const hints = {
+    name:  { hint: 'Letters, spaces, hyphens only', err: 'Enter a valid full name (min 2 characters)' },
+    email: { hint: 'e.g. jane@example.com', err: 'Enter a valid email address' },
+    phone: { hint: 'Digits, spaces, +, - and () accepted', err: 'Enter a valid phone number' },
+    password: { hint: 'At least 8 characters recommended', err: 'Password must be at least 8 characters' }
+  };
+
+  // ── State ──────────────────────────────────────────────────────────
+  const valid = { name: false, email: false, phone: false, password: false };
+  const touched = { name: false, email: false, phone: false, password: false };
+
+  // ── Setup fields ───────────────────────────────────────────────────
+  ['name','email','phone','password'].forEach(id => {
+    const el = document.getElementById(id);
+    const msgEl = document.getElementById(id + '-msg');
+
+    el.addEventListener('input', () => {
+      touched[id] = true;
+      validate(id, el, msgEl);
+      updateSubmit();
+    });
+    el.addEventListener('blur', () => {
+      if (!touched[id] && el.value === '') return;
+      touched[id] = true;
+      validate(id, el, msgEl);
+      updateSubmit();
+    });
+    el.addEventListener('focus', () => {
+      if (!touched[id]) {
+        msgEl.className = 'msg hint';
+        msgEl.innerHTML = hints[id].hint;
+      }
+    });
+  });
+
+  function validate(id, el, msgEl) {
+    const v = el.value;
+    if (v === '') {
+      el.className = '';
+      msgEl.className = 'msg hint';
+      msgEl.innerHTML = hints[id].hint;
+      valid[id] = false;
+      if (id === 'password') setStrength(0);
+      return;
+    }
+    const ok = validators[id](v);
+    valid[id] = ok;
+    el.className = ok ? 'valid' : 'invalid';
+    msgEl.className = ok ? 'msg ok' : 'msg error';
+    msgEl.innerHTML = ok
+      ? checkSVG + (id === 'password' ? 'Strong enough' : 'Looks good')
+      : crossSVG + hints[id].err;
+    if (id === 'password') setStrength(v.length ? scorePassword(v) : 0);
+  }
+
+  // ── Password strength ──────────────────────────────────────────────
+  function scorePassword(pw) {
+    let s = 0;
+    if (pw.length >= 8) s++;
+    if (pw.length >= 12) s++;
+    if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) s++;
+    if (/\d/.test(pw)) s++;
+    if (/[^A-Za-z0-9]/.test(pw)) s++;
+    return Math.min(4, Math.max(1, s));
+  }
+  const strengthNames = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  function setStrength(score) {
+    const wrap = document.getElementById('strengthWrap');
+    const label = document.getElementById('strengthLabel');
+    if (!score) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    [1,2,3,4].forEach(i => {
+      const b = document.getElementById('b' + i);
+      b.className = 'bar' + (i <= score ? ` active-${score}` : '');
+    });
+    label.className = `strength-label s${score}`;
+    label.textContent = strengthNames[score];
+  }
+
+  // ── Show / hide password ───────────────────────────────────────────
+  const pwInput  = document.getElementById('password');
+  const toggleBtn = document.getElementById('togglePw');
+  const eyeEl    = document.getElementById('eyeIcon');
+  let pwVisible = false;
+  toggleBtn.addEventListener('click', () => {
+    pwVisible = !pwVisible;
+    pwInput.type = pwVisible ? 'text' : 'password';
+    eyeEl.innerHTML = pwVisible ? eyeSlash : eyeOpen;
+  });
+
+  // ── Submit button state ────────────────────────────────────────────
+  function updateSubmit() {
+    document.getElementById('submitBtn').disabled =
+      !Object.values(valid).every(Boolean);
+  }
+  updateSubmit();
+
+  // ── localStorage submissions ───────────────────────────────────────
+  function loadSubmissions() {
+    try { return JSON.parse(localStorage.getItem('submissions') || '[]'); }
+    catch { return []; }
+  }
+  function saveSubmissions(arr) {
+    try { localStorage.setItem('submissions', JSON.stringify(arr)); } catch {}
+  }
+
+  // ── Render log ─────────────────────────────────────────────────────
+  function renderLog() {
+    const arr = loadSubmissions();
+    const list = document.getElementById('logList');
+    const count = document.getElementById('logCount');
+    count.textContent = arr.length + (arr.length === 1 ? ' entry' : ' entries');
+    if (!arr.length) {
+      list.innerHTML = '<div class="log-empty">No submissions yet.</div>';
+      return;
+    }
+    list.innerHTML = [...arr].reverse().map(s => `
+      <div class="entry">
+        <div class="entry-top">
+          <span class="entry-name">${esc(s.name)}</span>
+          <span class="entry-time">${s.time}</span>
+        </div>
+        <div class="entry-detail">${esc(s.email)} · ${esc(s.phone)}</div>
+      </div>
+    `).join('');
+  }
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  renderLog();
+
+  // ── Form submit ────────────────────────────────────────────────────
+  document.getElementById('regForm').addEventListener('submit', e => {
+    e.preventDefault();
+    ['name','email','phone','password'].forEach(id => {
+      touched[id] = true;
+      validate(id, document.getElementById(id), document.getElementById(id+'-msg'));
+    });
+    updateSubmit();
+    if (!Object.values(valid).every(Boolean)) return;
+
+    const entry = {
+      name:  document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      time:  new Date().toLocaleString('en-US', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
+    };
+    const arr = loadSubmissions();
+    arr.push(entry);
+    saveSubmissions(arr);
+    renderLog();
+
+    // Reset form
+    document.getElementById('regForm').reset();
+    ['name','email','phone','password'].forEach(id => {
+      const el = document.getElementById(id);
+      el.className = '';
+      document.getElementById(id+'-msg').className = 'msg hint';
+      document.getElementById(id+'-msg').innerHTML = '';
+      valid[id] = false;
+      touched[id] = false;
+    });
+    setStrength(0);
+    updateSubmit();
+
+    // Toast
+    showToast('Account created! Welcome aboard.');
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+</script>
+</body>
+</html>
